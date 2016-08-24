@@ -69,7 +69,6 @@ public class RunPhys implements Runnable{
                 mamma.world.act();
             }
             else{
-                assert acting.size() == 0: acting;
                 
                 mamma.frameCount++;
                 mamma.world.act();
