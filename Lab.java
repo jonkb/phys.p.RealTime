@@ -62,9 +62,9 @@ public class Lab{
     }
     
     //To be called every frame
-    public void dumpBin(){
+    public synchronized void dumpBin(){
         if(bin.size() > 0){
-            screen.run.doLater(new Runnable(){
+            SwingUtilities.invokeLater(new Runnable(){
                 public void run(){
                     for(Being being: bin)
                         beings.remove(being);
@@ -328,7 +328,7 @@ public class Lab{
     public void print(){
         Screen.debugShout("Please print: ("+curser.getX()+","+curser.getY()+") @"+System.currentTimeMillis());
         //This is postponed to avoid ConcurrenModification
-        screen.run.doLater(new PrintRequest(curser.getX(), curser.getY(), curserW, curserH));
+        SwingUtilities.invokeLater(new PrintRequest(curser.getX(), curser.getY(), curserW, curserH));
     }
 
     public void erase(){

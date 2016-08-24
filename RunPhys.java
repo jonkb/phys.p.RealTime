@@ -8,9 +8,7 @@ public class RunPhys implements Runnable{
     private static boolean paused = false; 
     //How many are left to act
     //public static ArrayList<ActPhys> acting = new ArrayList<ActPhys>();
-    public Stack<Runnable> acting = new Stack<Runnable>();
-    private int laggers = 0;//, a=0;
-    private Stack<Runnable> toDo = new Stack<Runnable>();
+    public Queue<Thread> acting = new LinkedList<Thread>();
     public RunPhys(Screen mom){
         mamma = mom;
         startTime = System.currentTimeMillis();
@@ -40,7 +38,7 @@ public class RunPhys implements Runnable{
             Thread.sleep(rate);
         }catch(Exception e){System.out.println(e);}
         
-        debugShout("Actually starting main loop");
+        debugShout("Starting the main loop now");
         try{
             loop();
         }catch(Exception e){
@@ -69,7 +67,6 @@ public class RunPhys implements Runnable{
             
             if(paused){
                 mamma.world.act();
-                mamma.world.curser.act();
             }
             else{
                 assert acting.size() == 0: acting;
@@ -78,91 +75,55 @@ public class RunPhys implements Runnable{
                 mamma.world.act();
                 /* New version implementing massive multithreading
                  */
+                //act
                 for(BiList.Node n = mamma.world.beings.a1; n != null; n = n.getNextA()){
                     Being being = (Being) n.getVal();
                     ActPhys a = new ActPhys(being, 0);
-                    //acting.add(a);
-                    acting.push(a);
                     Thread t = new Thread(a);
+                    acting.add(t);
                     t.start();
                 }
-                //Wait for everybody to finish applying forces
-                while(!acting.empty()){//acting.size()>0)
-                    debugShout("Waiting for actors to act");
-                    ActPhys a = (ActPhys)acting.pop();
-                    a.end();
+                for(Thread t = acting.poll(); t!= null; t = acting.poll()){
+                    try{
+                        t.join();
+                    }catch(Exception e){System.out.println(e);}
                 }
-                assert acting.size() == 0: acting;
+                //updateXY
                 for(BiList.Node n = mamma.world.beings.a1; n != null; n = n.getNextA()){
                     Being being = (Being) n.getVal();
                     ActPhys a = new ActPhys(being, 1);
-                    acting.add(a);
                     Thread t = new Thread(a);
+                    acting.add(t);
                     t.start();
+                }
+                for(Thread t = acting.poll(); t!= null; t = acting.poll()){
+                    try{
+                        t.join();
+                    }catch(Exception e){System.out.println(e);}
                 }
             }
             
             /* By invoking this later, it actually works. 
-             * Repaint() must be called from EDT*/
-            holdUp();
+             * Repaint() must be called from EDT
+             * Try switching it to a "synchronous" method of screen*/
             SwingUtilities.invokeLater(new Runnable(){
                 public void run(){
                     //Everything needs to be in place before it is drawn on the canvas
-                    while(!acting.empty()){//acting.size()>0)
-                        debugShout("Waiting for actors to move");
-                        ActPhys a = (ActPhys)acting.pop();
-                        a.end();
+                    for(Thread t = acting.poll(); t!= null; t = acting.poll()){
+                        try{
+                            t.join();
+                        }catch(Exception e){System.out.println(e);}
                     }
                     mamma.repaint();
                     if(mamma.recording)
                         mamma.snap();
-                    thanks();
                 }
             });
-            
-            /* Hold up for things that need a moment.
-             * Allow invokeLater threads to run
-             * Prevent ConcurrentModification
-             */
-            while(laggers > 0){//holdUp() RunPhys:[acting.move-repaint]
-                try{
-                    debugShout("I'm Waiting.", 3);
-                    Thread.sleep(10);
-                }catch(Exception e){System.out.println(e);}
-            }
-            while(!toDo.empty()){//doLater() Lab:[print, erase, dumpBin]
-                debugShout("Running a postponed action", 2);
-                Runnable next = toDo.pop();
-                next.run();
-            }
             
             try{
                 Thread.sleep(rate);
             }catch(Exception e){System.out.println(e);}
         }
-    }
-    
-    /**
-     * Called by any function that could take longer than 20millis
-     * but needs to run while RunPhys is not iterating.
-     * Prevents ConcurrentModification with invokeLater on EDT
-     */
-    public void holdUp(){
-        laggers++;
-    }
-    /**
-     * Signify that the action is done
-     */
-    public void thanks(){
-        assert laggers > 0;
-        laggers--;
-    }
-    /**
-     * An alternative interface that doesn't use holdUp()
-     * These Runnables are executed by the RunPhys Thread, not EDT
-     */
-    public void doLater(Runnable todo){
-        toDo.push(todo);
     }
     
     public static void debugShout(String message){
@@ -175,7 +136,6 @@ public class RunPhys implements Runnable{
     class ActPhys implements Runnable{
         Being being;
         int version;
-        boolean done = false;
         /**
          * Make a new ActPhys Runnable of type act or updateXY
          * v(0) = act();
@@ -183,7 +143,7 @@ public class RunPhys implements Runnable{
          */
         public ActPhys(Being b, int v){
             being = b;
-            assert v>-1 && v<2;
+            assert v==0 || v==1;
             version = v;
             String to = "";
             if(v == 0)
@@ -197,16 +157,6 @@ public class RunPhys implements Runnable{
                 being.act();
             if(version == 1)
                 being.updateXY();
-            done = true;
-        }
-        public void end(){
-            while(!done){
-                try{
-                    Thread.sleep(10);
-                }catch(Exception e){System.out.println(e);}
-            }
-            acting.remove(this);
-            debugShout(being+"\tDone ("+acting.size()+" left)", 2);
         }
     }
 }

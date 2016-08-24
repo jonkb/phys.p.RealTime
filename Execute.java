@@ -16,7 +16,7 @@ public class Execute{
     //Execution Options:
     private static int 
         endF = 1000000,
-        simNum = 23;
+        simNum = 1;
     private static double
         zoom = 2;
     private static String 
@@ -43,10 +43,8 @@ public class Execute{
     public static void load(String phys){
         File f = new File(phys);
         //If it is a .phys file
-        if(f.getName().substring(f.getName().lastIndexOf(".")).equals(".phys"))
-        {
-            try
-            {
+        if(f.getName().substring(f.getName().lastIndexOf(".")).equals(".phys")){
+            try{
                 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
                 Data d = (Data) ois.readObject();
                 ois.close();
@@ -56,8 +54,7 @@ public class Execute{
                 int F= Integer.parseInt(pieces[pieces.length-2]);
                 loadData(d, F);
             }
-            catch(Exception e)
-            {
+            catch(Exception e){
                 System.out.println("E: "+e);
             }
         }
