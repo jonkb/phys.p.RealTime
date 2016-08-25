@@ -11,19 +11,21 @@ import java.util.ArrayList;
 public class Execute{
     static Screen screen;
     public static long t0;
-    public static int debugging = 0;//0: just a few 1:a few each frame 2: lots
+    public static int debugging = 2;//0: just a few 1:a few each frame 2: lots
     
     //Execution Options:
     private static int 
         endF = 1000000,
-        simNum = 23;
+        simNum = 1;
     private static double
-        zoom = 2;
+        zoom = 1;
     private static String 
         SIM = "",//"SandFall",
         saveFile = "Tests/"+SIM+"/"+simNum+".";
     
     public static void main(String[] args){
+        if(args.length > 0)
+            debugging = Integer.parseInt(args[0]);
         t0 = System.currentTimeMillis();
         System.gc();
         if(SIM.equals(""))
@@ -43,10 +45,8 @@ public class Execute{
     public static void load(String phys){
         File f = new File(phys);
         //If it is a .phys file
-        if(f.getName().substring(f.getName().lastIndexOf(".")).equals(".phys"))
-        {
-            try
-            {
+        if(f.getName().substring(f.getName().lastIndexOf(".")).equals(".phys")){
+            try{
                 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
                 Data d = (Data) ois.readObject();
                 ois.close();
@@ -56,8 +56,7 @@ public class Execute{
                 int F= Integer.parseInt(pieces[pieces.length-2]);
                 loadData(d, F);
             }
-            catch(Exception e)
-            {
+            catch(Exception e){
                 System.out.println("E: "+e);
             }
         }
@@ -168,6 +167,8 @@ public class Execute{
     
     /**
      * The rest is for interfacing with the simulator through CLI
+     * The text interface is NOT realtime and does NOT use multithreading
+     *      (as of 8/25/16)
      */
     public static void textInterface(){
         System.out.println("Running Simulation:");

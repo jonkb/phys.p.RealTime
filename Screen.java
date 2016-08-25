@@ -14,7 +14,7 @@ MouseListener, MouseMotionListener {
     Lab world;
     RunPhys run;
     
-    static final int width = 432;//768;//(int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().width*1/2;
+    static final int width = 768;//(int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().width*1/2;
     static final int height = 576;//(int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().height*1/2;
     
     public static double zRatio;//10^- //For LinkedParticle.0001 - 00000001;
@@ -224,7 +224,7 @@ MouseListener, MouseMotionListener {
         {
             g.setFont(new Font("font", Font.BOLD, 30));
             g.setColor(Color.white);
-            g.drawString("Simulation Complete", world.getWidth()/ 2, world.getHeight()/ 2);
+            g.drawString("Simulation Complete", 10, world.getHeight()/ 2);
         }
         else
         {
