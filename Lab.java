@@ -1,12 +1,12 @@
 import java.awt.event.*;
 import javax.swing.*;
-import java.util.ArrayList;
+import java.util.*;//queue, arraylist, linkedlist
 import java.lang.System;
 public class Lab{
     Screen screen;
     private final int wWidth, wHeight;
     public BiList<Being> beings;//A list is Actors(; B list is everything)
-    public ArrayList<Being> bin;//To Do: Phase this into the being list (TriList)
+    public Queue<Being> bin;//To Do: Phase this into the being list (TriList)
 
     //world.time is the dt for the simulation. It is measured in seconds
     static double time = 1;
@@ -58,20 +58,38 @@ public class Lab{
     }
     
     public void removeBeing(Being being){
-        bin.add(being);
+        synchronized(this){
+            bin.add(being);
+        }
     }
     
     //To be called every frame
-    public synchronized void dumpBin(){
+    public void dumpBin(){
         if(bin.size() > 0){
+            /*
             SwingUtilities.invokeLater(new Runnable(){
                 public void run(){
                     for(Being being: bin)
                         beings.remove(being);
                     System.gc();
                 }
-            });
-            Screen.debugShout("Bin Dumped", 1);
+            });*/
+            /*
+            for(Being being: bin){
+                beings.remove(being);
+                bin.remove(being);
+            }*/
+            synchronized(this){
+                if(bin.peek() != null)
+                    Screen.debugShout("bin has elements", 1);
+                for(Being b = bin.poll(); b!= null; b = bin.poll()){
+                    beings.remove(b);
+                }
+                if(bin.peek() != null)
+                    Screen.debugShout("bin still has elements", 1);
+                Screen.debugShout("Bin Dumped. beings has "+beings.size()+" elements", 1);
+                System.gc();
+            }
         }
     }
 
@@ -106,7 +124,7 @@ public class Lab{
         wWidth = s.width;
         wHeight = s.height;
         beings = new BiList<Being>();
-        bin = new ArrayList<Being>();
+        bin = new LinkedList<Being>();
 
         curser = new Curser();
         //addABeing
@@ -124,7 +142,7 @@ public class Lab{
         wHeight = h;
         
         beings = new BiList<Being>();
-        bin = new ArrayList<Being>();
+        bin = new LinkedList<Being>();
         
         System.out.println("new world: w="+wWidth+"h="+wHeight);
     }

@@ -19,6 +19,7 @@ public class RunPhys implements Runnable{
     }
     public void unpause(){
         paused = false;
+        prevTime = System.currentTimeMillis();
         debugShout("Unpausing.", 1);
     }
     public boolean paused(){
@@ -69,6 +70,7 @@ public class RunPhys implements Runnable{
                 mamma.world.act();
             }
             else{
+                reportMem("A");
                 
                 mamma.frameCount++;
                 mamma.world.act();
@@ -81,7 +83,9 @@ public class RunPhys implements Runnable{
                     Thread t = new Thread(a);
                     acting.add(t);
                     t.start();
+                    //reportMem("loop");
                 }
+                reportMem("B");
                 for(Thread t = acting.poll(); t!= null; t = acting.poll()){
                     try{
                         t.join();
@@ -100,6 +104,7 @@ public class RunPhys implements Runnable{
                         t.join();
                     }catch(Exception e){System.out.println(e);}
                 }
+                reportMem("C");
             }
             
             /* By invoking this later, it actually works. 
@@ -125,37 +130,13 @@ public class RunPhys implements Runnable{
         }
     }
     
+    public static void reportMem(String tag){
+        debugShout("Heap memory at "+tag+"(f/t/m):"+(Runtime.getRuntime().freeMemory() / 1000)+"k/"+(Runtime.getRuntime().totalMemory() / 1000)+"k/"+(Runtime.getRuntime().maxMemory() / 1000)+"k", 2);
+    }
     public static void debugShout(String message){
         Screen.debugShout(message);
     }
     public static void debugShout(String message, int p){
         Screen.debugShout(message, p);
-    }
-    
-    class ActPhys implements Runnable{
-        Being being;
-        int version;
-        /**
-         * Make a new ActPhys Runnable of type act or updateXY
-         * v(0) = act();
-         * v(1) = updateXY();
-         */
-        public ActPhys(Being b, int v){
-            being = b;
-            assert v==0 || v==1;
-            version = v;
-            String to = "";
-            if(v == 0)
-                to = "to act";
-            if(v == 1)
-                to = "to move";
-            debugShout(b+"\tAdd: "+to+": ("+acting.size()+" total)", 2);
-        }
-        public void run(){
-            if(version == 0)
-                being.act();
-            if(version == 1)
-                being.updateXY();
-        }
     }
 }
