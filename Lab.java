@@ -5,7 +5,7 @@ import java.lang.System;
 public class Lab{
     Screen screen;
     private final int wWidth, wHeight;
-    public BiList<Being> beings;//A list is Actors(; B list is everything)
+    public BiList<Being> beings;//A list is Actors; B list includes fixed
     public Queue<Being> bin;//To Do: Phase this into the being list (TriList)
 
     //world.time is the dt for the simulation. It is measured in seconds
@@ -22,10 +22,8 @@ public class Lab{
     public byte density = 1;
     public Types curserType;
     public Curser curser;
-    //JPanel panel = WorldHandler.getInstance().getWorldCanvas();  
-
-    int CurserX;
-
+    //JPanel panel = WorldHandler.getInstance().getWorldCanvas();
+    
     public void addABeing(Being being, int x, int y){
         being.world = this;
         being.setLocation(x, y);
@@ -127,7 +125,6 @@ public class Lab{
         bin = new LinkedList<Being>();
 
         curser = new Curser();
-        //addABeing
         addBeing(curser, wWidth/2, wHeight/2);
         curserType = Types.SAND;
 
@@ -403,12 +400,9 @@ public class Lab{
                 
                 double x = 0;
                 double y = 0;
-                for(int a = 0; a <= (cw-1) * density ; a++)
-                {
-                    for(int b = 0; b <= (ch-1) * density ; b++)
-                    {
-                        switch(curserType)
-                        {
+                for(int a = 0; a <= (cw-1) * density ; a++){
+                    for(int b = 0; b <= (ch-1) * density ; b++){
+                        switch(curserType){
                             case FIXED: 
                             particle = new Fixed();
                             break;
@@ -452,19 +446,16 @@ public class Lab{
     
                 // NEVERMIND -Too much trig - Prints all particles spiraling outward from the center 
                 //INSTEAD - go Row by Row
-                for(int a = 0; a < 2*(n+1); a++)
-                {
+                for(int a = 0; a < 2*(n+1); a++){
                     y = cy + a*Math.sqrt(3)/2.0/density; //a*1/2*sqrt(3)
                     //number of particles in this row
                     int rowLen = 2*n-1-Math.abs(n-a-1);
                     //distance in rows from center row
                     int offSet = Math.abs(n-a-1);
-                    for(int b = 0; b < rowLen; b++)
-                    {
+                    for(int b = 0; b < rowLen; b++){
                         x = cx + (offSet/2.0 + b)/density;
     
-                        switch(curserType)
-                        {
+                        switch(curserType){
                             case FIXED: 
                             particle = new Fixed();
                             break;
@@ -499,13 +490,10 @@ public class Lab{
                 double h = Math.sqrt(3)/2/density;//Height of one row
                 double lastCol = cx+cw;
                 double lastRow = cy+ch;
-                for(x = cx; x <= lastCol; x+= 1/density)
-                {
+                for(x = cx; x <= lastCol; x+= 1/density){
                     int row = 0;
-                    for(y = cy; y <= lastRow; y += h)
-                    {
-                        switch(curserType)
-                        {
+                    for(y = cy; y <= lastRow; y += h){
+                        switch(curserType){
                             case FIXED: 
                             particle = new Fixed();
                             break;
@@ -545,14 +533,11 @@ public class Lab{
                 int r = cw; //inner radius
                 int rings = ch; // # of rings progressing outwards
     
-                for(int a = 0; a < rings; a++)
-                {
+                for(int a = 0; a < rings; a++){
                     //Path Length (circumference) = 2*pi*r
                     int cir = (int) Math.floor(2*Math.PI*(r+a));
-                    for(int b = 0; b < cir; b++)
-                    {
-                        switch(curserType)
-                        {
+                    for(int b = 0; b < cir; b++){
+                        switch(curserType){
                             case FIXED: 
                             particle = new Fixed();
                             break;

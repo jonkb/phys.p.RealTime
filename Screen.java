@@ -12,7 +12,7 @@ public class Screen extends JPanel
 implements KeyListener, MouseWheelListener, 
 MouseListener, MouseMotionListener {
     Lab world;
-    RunPhys run;
+    RunSim run;
     
     static final int width = 768;//(int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().width*1/2;
     static final int height = 576;//(int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().height*1/2;
@@ -121,8 +121,6 @@ MouseListener, MouseMotionListener {
                     recording = true;
                 }
                 break;
-            default:
-                break;
         }
     }
     //MouseWheelListener command
@@ -200,7 +198,7 @@ MouseListener, MouseMotionListener {
      * Start. Also snap a frame zero
      */
     public void start(){
-        run = new RunPhys(this);
+        run = new RunSim(this);
         repaint();//Adds a frame zero (though frameCount = 1 for file format)
         if(recording)
             snap();
@@ -216,18 +214,15 @@ MouseListener, MouseMotionListener {
         System.out.println("Simulation Complete");
     }
     
-    public void paint(Graphics g)
-    {
+    public void paint(Graphics g){
         //System.out.println("painting");
         g.setFont(new Font("font", Font.BOLD, 11));
-        if(run.ended())
-        {
+        if(run.ended()){
             g.setFont(new Font("font", Font.BOLD, 30));
             g.setColor(Color.white);
             g.drawString("Simulation Complete", 10, world.getHeight()/ 2);
         }
-        else
-        {
+        else{
             //Draw the black background
             g.setColor(Color.black);
             g.fillRect(0, 0, width, height);

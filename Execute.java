@@ -11,7 +11,8 @@ import java.util.ArrayList;
 public class Execute{
     static Screen screen;
     public static long t0;
-    public static int debugging = 2;//0: just a few 1:a few each frame 2: lots
+    //0: just a few messages 1:a few each frame 2: lots
+    public static int debugging = 2;
     
     //Execution Options:
     private static int 
@@ -24,8 +25,12 @@ public class Execute{
         saveFile = "Tests/"+SIM+"/"+simNum+".";
     
     public static void main(String[] args){
-        if(args.length > 0)
-            debugging = Integer.parseInt(args[0]);
+        switch(args.length){
+            case 2:
+                zoom = Integer.parseInt(args[1]);
+            case 1:
+                debugging = Integer.parseInt(args[0]);
+        }
         t0 = System.currentTimeMillis();
         System.gc();
         if(SIM.equals(""))

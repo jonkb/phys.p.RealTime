@@ -1,6 +1,14 @@
 import javax.swing.*;
 
 public class Test{
+    public static void main(String args[]){
+        System.gc();
+        System.out.println("A");
+        allTheThreads();
+        System.out.println("B");
+        inLine();
+        System.out.println("C");
+    }
     public static void biTest(){
         BiList<Being> list = new BiList<Being>();
         Sand s = new Sand();
@@ -76,30 +84,34 @@ public class Test{
     }
     static int i = 0;
     static int running = 0;
+    private static synchronized void incRunning(){
+        running++;
+    }
+    private static synchronized void decRunning(){
+        running--;
+    }
     public static void allTheThreads(){
         System.gc();
-        while(true){
+        while(i < 5000){
             i++;
             Thread t = new Thread(new Do(i));
             t.start();
-            System.out.println(running+" Threads Running");
-            try{
-                Thread.sleep(1);
-            }catch(Exception e){}
+            //System.out.println(running+" Threads Running");
         }
     }
     public static void inLine(){
-        while(true){
+        i = 0;
+        while(i < 5000){
             i++;
-            System.out.println(running+" Threads Running");
+            //System.out.println(running+" Threads Running");
             System.out.println("Action number "+i+" executing. Time: "+System.currentTimeMillis());
-            try{
-                Thread.sleep(40);
-            }catch(Exception e){}
+            double b = 1;
+            for(int a = 0; a< 10000; a++){
+                b *= 1.01;
+                if(b > Math.pow(10.11, 43.0))
+                    System.out.print(b);
+            }
             System.out.println("Action number "+i+" done");
-            try{
-                Thread.sleep(1);
-            }catch(Exception e){}
         }
     }
     //Simply shortening print
@@ -112,13 +124,16 @@ public class Test{
             n = num;
         }
         public void run(){
-            running++;
+            //incRunning();
             System.out.println("Thread number "+n+" executing. Time: "+System.currentTimeMillis());
-            try{
-                Thread.sleep(40);
-            }catch(Exception e){}
+            double b = 1;
+            for(int a = 0; a< 10000; a++){
+                b *= 1.01;
+                if(b > Math.pow(10.11, 43.0))
+                    System.out.print(b);
+            }
             System.out.println("Thread number "+n+" done");
-            running--;
+            //decRunning();
         }
     }
 }

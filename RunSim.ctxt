@@ -1,6 +1,6 @@
 #BlueJ class context
 comment0.params=mom
-comment0.target=RunPhys(Screen)
+comment0.target=RunSim(Screen)
 comment1.params=
 comment1.target=void\ pause()
 comment10.params=message

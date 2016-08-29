@@ -1,6 +1,6 @@
 import javax.swing.*;
 import java.util.*;//stack, arraylist
-public class RunPhys implements Runnable{
+public class RunSim implements Runnable{
     private Screen mamma;
     public long startTime, prevTime;
     public int rate = 10;
@@ -9,7 +9,7 @@ public class RunPhys implements Runnable{
     //How many are left to act
     //public static ArrayList<ActPhys> acting = new ArrayList<ActPhys>();
     public Queue<Thread> acting = new LinkedList<Thread>();
-    public RunPhys(Screen mom){
+    public RunSim(Screen mom){
         mamma = mom;
         startTime = System.currentTimeMillis();
     }
@@ -74,7 +74,7 @@ public class RunPhys implements Runnable{
                 
                 mamma.frameCount++;
                 mamma.world.act();
-                /* New version implementing massive multithreading
+                /* Massive multithreading!
                  */
                 //act
                 for(BiList.Node n = mamma.world.beings.a1; n != null; n = n.getNextA()){
